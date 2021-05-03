@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.neu.reliidentyBack.dao.TicketMapper">
+    <sql id="selectFields">
+        user_id,content,status,expired,use_time
+    </sql>
+
+    <sql id="insertLoginFields">
+        user_id,ticket_type,content,status,expired
+    </sql>
+    <sql id="insertUseFields">
+        user_id,ticket_type,content,status,use_time
+    </sql>
+    <select id="selectTicketByContent" resultType="com.neu.reliidentyBack.domain.Ticket">
+        select <include refid="selectFields"></include>
+        from ticket
+        where content=#{content}
+    </select>
+
+    <insert id="insertLoginTicket" keyProperty="id">
+        insert  into ticket(<include refid="insertLoginFields"></include>)
+        values(#{userId},#{content},#{expired},#{ticketType})
+    </insert>
+
+    <insert id="insertUseTicket" keyProperty="id">
+        insert  into ticket(<include refid="insertUseFields"></include>)
+        values(#{userId},#{content},#{useTime},#{ticketType})
+    </insert>
+
+    <update id="updateUseTime" keyProperty="id">
+        update ticket set use_time=#{time} where id = #{id}
+    </update>
+
+
+</mapper>

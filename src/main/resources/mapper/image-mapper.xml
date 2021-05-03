@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.neu.reliidentyBack.dao.ImageMapper">
+    <sql id="selectFields">
+        userid,ownerid,vioProbability,sexProbability,advProbability,polProbability,create_time
+    </sql>
+
+    <select id="selectImageByMD5" resultType="com.neu.reliidentyBack.domain.Image">
+        select <include refid="selectFields"></include>
+        from image
+        where imageMD5=#{imageMD5}
+    </select>
+
+    <select id="selectImageByUser" resultType="com.neu.reliidentyBack.domain.Image">
+        select <include refid="selectFields"></include>
+        from image
+        where userid=#{userId}
+
+    </select>
+
+    <select id="selectImageByOwner" resultType="com.neu.reliidentyBack.domain.Image">
+        select <include refid="selectFields"></include>
+        from image
+        where ownerid=#{ownerId}
+    </select>
+
+
+
+</mapper>
