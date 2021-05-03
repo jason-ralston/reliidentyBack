@@ -1,4 +1,4 @@
-package com.neu.reliidentyBack.controller.controller.interceptor;
+package com.neu.reliidentyBack.controller.interceptor;
 
 import com.neu.reliidentyBack.Annotation.LoginRequired;
 import com.neu.reliidentyBack.reliidentyUtils.HostHolder;

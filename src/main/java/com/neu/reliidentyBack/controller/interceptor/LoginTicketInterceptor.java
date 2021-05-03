@@ -1,4 +1,4 @@
-package com.neu.reliidentyBack.controller.controller.interceptor;
+package com.neu.reliidentyBack.controller.interceptor;
 
 import com.neu.reliidentyBack.domain.Ticket;
 import com.neu.reliidentyBack.domain.User;
@@ -6,6 +6,7 @@ import com.neu.reliidentyBack.reliidentyUtils.CookieUtil;
 import com.neu.reliidentyBack.reliidentyUtils.HostHolder;
 import com.neu.reliidentyBack.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,6 +17,7 @@ import java.util.Date;
  * @author jasonR
  * @date 2021/5/2 21:18
  */
+@Component
 public class LoginTicketInterceptor implements HandlerInterceptor {
     @Autowired
     private UserService userService;
