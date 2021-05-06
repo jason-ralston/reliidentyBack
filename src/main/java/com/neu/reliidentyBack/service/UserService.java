@@ -114,4 +114,10 @@ public class UserService {
     public int updateUseTime(int time,int id){
         return ticketMapper.updateUseTime(time,id);
     }
+
+    //用户登出
+    public void UserLogout(String ticket){
+        ticketMapper.updateStatus(ticket);
+
+    }
 }

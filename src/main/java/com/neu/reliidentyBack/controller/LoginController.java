@@ -1,6 +1,7 @@
 package com.neu.reliidentyBack.controller;
 
 import com.neu.reliidentyBack.domain.User;
+import com.neu.reliidentyBack.reliidentyUtils.CookieUtil;
 import com.neu.reliidentyBack.reliidentyUtils.ReliidentyUtils;
 import com.neu.reliidentyBack.reliidentyUtils.enums.LoginEnum;
 import com.neu.reliidentyBack.service.UserService;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
@@ -31,7 +33,7 @@ public class LoginController {
      * 注册方法
      *
      * */
-    @RequestMapping(path = "/register",method = RequestMethod.POST)
+    @RequestMapping(path = "/register",method = RequestMethod.GET)
     @ResponseBody
     public String register(User user){
         Map<String,Object> map=userService.register(user);
@@ -43,7 +45,7 @@ public class LoginController {
         }
     }
 
-    @RequestMapping(path = "/login",method = RequestMethod.POST)
+    @RequestMapping(path = "/login",method = RequestMethod.GET)
     @ResponseBody
     public String login(String username, String password, boolean rememberme, HttpServletResponse response){
 
@@ -55,9 +57,18 @@ public class LoginController {
             Cookie cookie =new Cookie("loginTicket",map.get("loginTicket").toString());
             cookie.setPath(PATH);
             response.addCookie(cookie);
-            return ReliidentyUtils.getJSONString(200,"注册成功",map);
+            return ReliidentyUtils.getJSONString(200,"登陆成功",map);
         }else{
             return ReliidentyUtils.getJSONString(400,"用户名或密码出现问题",map);
         }
+    }
+
+    @RequestMapping(path="/logout",method = RequestMethod.GET)
+    @ResponseBody
+    public String logout(HttpServletRequest request){
+        String ticket = CookieUtil.getValue(request,"ticket");
+        userService.UserLogout(ticket);
+        return ReliidentyUtils.getJSONString(200,"登出成功");
+
     }
 }

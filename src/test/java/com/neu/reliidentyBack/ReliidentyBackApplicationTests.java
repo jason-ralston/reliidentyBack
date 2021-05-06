@@ -1,22 +1,31 @@
 package com.neu.reliidentyBack;
 
 import com.neu.reliidentyBack.controller.ImageController;
+import com.neu.reliidentyBack.controller.LoginController;
 import com.neu.reliidentyBack.domain.Image;
+import com.neu.reliidentyBack.domain.User;
 import com.neu.reliidentyBack.reliidentyUtils.ReliidentyUtils;
 import com.neu.reliidentyBack.service.ImageService;
+import com.neu.reliidentyBack.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
 
 import java.util.*;
 
+
+
 @SpringBootTest
+@ContextConfiguration(classes =ReliidentyBackApplication.class)
 class ReliidentyBackApplicationTests {
 	@Autowired
 	ImageService imageService;
 
 	@Autowired
-	ImageController controller;
+	UserService userService;
 
 	@Test
 	void contextLoads() {
@@ -58,6 +67,17 @@ class ReliidentyBackApplicationTests {
 		}
 		map.put("res",imageVo);
 		System.out.println(ReliidentyUtils.getJSONString(200,"查询成功",map));
+	}
+	@Test
+	public void testRegister(){
+		User user =new User();
+		user.setUsername("xiaofeng");
+		user.setPassword("666");
+		System.out.println(userService.register(user));
+	}
+	@Test
+	public void testLogin(){
+		System.out.println(userService.login("小砜","666",2000));
 	}
 
 }

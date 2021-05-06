@@ -41,7 +41,7 @@ public class ImageController {
     @Autowired
     private HostHolder hostHolder;
 
-    @RequestMapping(path = "/AnaResUnLogin",method = RequestMethod.POST)
+    @RequestMapping(path = "/AnaResUnLogin",method = RequestMethod.GET)
     @ResponseBody
     public String getAnalysisResult(MultipartFile imageFile,String ownerId,String content){
         Map<String,Object> map=new HashMap<>();
@@ -113,7 +113,7 @@ public class ImageController {
         return ReliidentyUtils.getJSONString(200,"请求成功",map);
     }
 
-    @RequestMapping(path = "/AnaResLogin",method = RequestMethod.POST)
+    @RequestMapping(path = "/AnaResLogin",method = RequestMethod.GET)
     @ResponseBody
     @LoginRequired
     public String getAnalysisResult(MultipartFile imageFile,String ownerId){

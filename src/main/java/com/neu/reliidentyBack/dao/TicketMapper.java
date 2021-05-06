@@ -15,4 +15,5 @@ public interface TicketMapper {
     int insertLoginTicket(Ticket ticket);
     int insertUseTicket(Ticket ticket);
     int updateUseTime(int time,int id);
+    int updateStatus(String ticket);
 }
