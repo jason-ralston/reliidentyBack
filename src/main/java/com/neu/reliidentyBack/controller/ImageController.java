@@ -94,12 +94,13 @@ public class ImageController {
             image.setOwnerId(ownerId);
             image.setUserId(user.getId());
             //python端处理数据
-            image = imageService.analysisImage(image,path);
-            image.setCreateTime(new Date());
-            map.put("vio",image.getVioProbability());
-            map.put("sex",image.getSexProbability());
-            map.put("adv",image.getAdvProbability());
-            map.put("pol",image.getPolProbability());
+             image = imageService.analysisImage(image,path);
+             image.setCreateTime(new Date());
+             map.put("vio",image.getVioProbability());
+             map.put("sex",image.getSexProbability());
+             map.put("adv",image.getAdvProbability());
+             map.put("pol",image.getPolProbability());
+
             //扣除使用次数
             userService.updateUseTime(useTicket.getUseTime()-1,useTicket.getId());
             //存储图片信息

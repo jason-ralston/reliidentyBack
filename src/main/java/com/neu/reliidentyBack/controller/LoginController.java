@@ -1,5 +1,7 @@
 package com.neu.reliidentyBack.controller;
 
+import com.google.code.kaptcha.Producer;
+import com.neu.reliidentyBack.domain.Image;
 import com.neu.reliidentyBack.domain.User;
 import com.neu.reliidentyBack.reliidentyUtils.CookieUtil;
 import com.neu.reliidentyBack.reliidentyUtils.ReliidentyUtils;
@@ -12,9 +14,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.imageio.ImageIO;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Map;
 
 /**
@@ -25,8 +32,10 @@ import java.util.Map;
 public class LoginController {
     @Autowired
     private UserService userService;
+    @Autowired
+    private Producer kaptchaProducer;
 
-    @Value("${server.servlet.context-path}")
+    @Value("${reliidenty.cookiePath.loginTicket}")
     private String PATH;
 
     /**
@@ -47,8 +56,11 @@ public class LoginController {
 
     @RequestMapping(path = "/login",method = RequestMethod.GET)
     @ResponseBody
-    public String login(String username, String password, boolean rememberme, HttpServletResponse response){
-
+    public String login(String username, String password, boolean rememberme,String code,HttpServletResponse response,HttpSession session){
+        String kaptchaCode=(String) session.getAttribute("kaptchaText");
+        if(!code.equals(kaptchaCode)){
+            return ReliidentyUtils.getJSONString(400,"验证码错误");
+        }
         //验证登陆信息
         int expiredSeconds =rememberme? LoginEnum.REMEMBER_EXPIRED_SECONDS.getTimes(): LoginEnum.DEFAULT_EXPIRED_SECONDS.getTimes();
         Map<String,Object> map=userService.login(username,password,expiredSeconds);
@@ -60,6 +72,22 @@ public class LoginController {
             return ReliidentyUtils.getJSONString(200,"登陆成功",map);
         }else{
             return ReliidentyUtils.getJSONString(400,"用户名或密码出现问题",map);
+        }
+    }
+
+    @RequestMapping(path = "kaptcha",method = RequestMethod.GET)
+    public void getKaptcha(HttpServletResponse response, HttpSession session){
+        String text=kaptchaProducer.createText();
+        //将验证码信息存在session里
+        session.setAttribute("kaptchaText",text);
+        BufferedImage image= kaptchaProducer.createImage(text);
+        response.setContentType("image.png");
+        //传输文件到前端
+        try{
+            OutputStream os=response.getOutputStream();
+            ImageIO.write(image,"png",os);
+        }catch (IOException e){
+            throw new RuntimeException("验证码上传失败",e);
         }
     }
 
