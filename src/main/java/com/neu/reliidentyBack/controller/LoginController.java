@@ -75,7 +75,7 @@ public class LoginController {
         }
     }
 
-    @RequestMapping(path = "kaptcha",method = RequestMethod.GET)
+    @RequestMapping(path = "/kaptcha",method = RequestMethod.GET)
     public void getKaptcha(HttpServletResponse response, HttpSession session){
         String text=kaptchaProducer.createText();
         //将验证码信息存在session里
