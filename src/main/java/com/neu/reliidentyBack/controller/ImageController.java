@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -41,9 +42,9 @@ public class ImageController {
     @Autowired
     private HostHolder hostHolder;
 
-    @RequestMapping(path = "/AnaResUnLogin",method = RequestMethod.GET)
+    @RequestMapping(path = "/AnaResUnLogin",method = RequestMethod.POST)
     @ResponseBody
-    public String getAnalysisResult(MultipartFile imageFile,String ownerId,String content){
+    public String getAnalysisResult(MultipartFile imageFile, @RequestParam("ownerId") String ownerId, @RequestParam("content") String content){
         Map<String,Object> map=new HashMap<>();
         Ticket useTicket=userService.findTicketByContent(content);
         if(useTicket==null){
@@ -114,10 +115,10 @@ public class ImageController {
         return ReliidentyUtils.getJSONString(200,"请求成功",map);
     }
 
-    @RequestMapping(path = "/AnaResLogin",method = RequestMethod.GET)
+    @RequestMapping(path = "/AnaResLogin",method = RequestMethod.POST)
     @ResponseBody
     @LoginRequired
-    public String getAnalysisResult(MultipartFile imageFile,String ownerId){
+    public String getAnalysisResult(MultipartFile imageFile,@RequestParam("ownerId") String ownerId){
         return getAnalysisResult(imageFile,ownerId,hostHolder.getUser().getUseTicket());
     }
 

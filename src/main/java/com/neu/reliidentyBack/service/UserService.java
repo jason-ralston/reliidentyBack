@@ -3,6 +3,7 @@ package com.neu.reliidentyBack.service;
 
 import com.neu.reliidentyBack.dao.TicketMapper;
 import com.neu.reliidentyBack.dao.UserMapper;
+import com.neu.reliidentyBack.domain.Kaptcha;
 import com.neu.reliidentyBack.domain.Ticket;
 import com.neu.reliidentyBack.domain.User;
 import com.neu.reliidentyBack.reliidentyUtils.ReliidentyUtils;
@@ -120,4 +121,14 @@ public class UserService {
         ticketMapper.updateStatus(ticket);
 
     }
+    //查找验证码
+    public Kaptcha findKaptcha(String kaptchaOwner){
+        return userMapper.selectKaptchaByOwner(kaptchaOwner);
+    }
+
+    //插入验证码
+    public void addKaptcha(Kaptcha kaptcha){
+        userMapper.insertKaptcha(kaptcha);
+    }
+
 }

@@ -10,6 +10,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.lang.reflect.Method;
 
@@ -33,8 +34,9 @@ public class LoginRequireInterceptor implements HandlerInterceptor {
             //如果这个请求方法打上了这个自定义注解，那么就需要检查用户的登陆状态
             LoginRequired loginRequired=method.getAnnotation(LoginRequired.class);
             if (loginRequired !=null && hostHolder.getUser()==null){
-                PrintWriter writer= response.getWriter();
-                writer.write(ReliidentyUtils.getJSONString(404,"资源不存在"));
+                OutputStream os= response.getOutputStream();
+                os.write(ReliidentyUtils.getJSONString(404,"资源不存在").getBytes());
+                os.close();
                 return false;
             }
 

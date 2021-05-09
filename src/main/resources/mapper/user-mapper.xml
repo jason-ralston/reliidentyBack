@@ -32,4 +32,15 @@
         insert into user(<include refid="insertFields"></include>)
         values(#{username},#{password},#{salt},#{Type,typeHandler=com.neu.reliidentyBack.reliidentyUtils.EnumTypeHandler},#{createTime},#{useTicket})
     </insert>
+
+    <insert id="insertKaptcha" keyProperty="kaptchaOwner" parameterType="com.neu.reliidentyBack.domain.Kaptcha">
+        insert into kaptcha kaptcha_owner,kaptcha_code,expired
+        values(#{kaptchaOwner},#{kaptchaCode},#{expired})
+    </insert>
+
+    <select id="selectKaptchaByOwner" resultType="com.neu.reliidentyBack.domain.Kaptcha">
+        select kaptcha kaptcha_owner,kaptcha_code,expired
+        from kaptcha
+        where kaptcha_owner=#{kaptchaOwner}
+    </select>
 </mapper>

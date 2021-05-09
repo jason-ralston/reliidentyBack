@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 
 /**
@@ -25,7 +26,10 @@ public class ExceptionAdvice {
         for (StackTraceElement stackTraceElement : e.getStackTrace()) {
             log.error(stackTraceElement.toString());
         }
-        PrintWriter writer =response.getWriter();
-        writer.write(ReliidentyUtils.getJSONString(500,"服务器出现异常！"));
+//        PrintWriter writer =response.getWriter();
+//        writer.write(ReliidentyUtils.getJSONString(500,"服务器出现异常！"));
+        OutputStream os= response.getOutputStream();
+        os.write(ReliidentyUtils.getJSONString(500,"服务器出现异常").getBytes());
+        os.close();
     }
 }

@@ -2,6 +2,7 @@ package com.neu.reliidentyBack.controller;
 
 import com.google.code.kaptcha.Producer;
 import com.neu.reliidentyBack.domain.Image;
+import com.neu.reliidentyBack.domain.Kaptcha;
 import com.neu.reliidentyBack.domain.User;
 import com.neu.reliidentyBack.reliidentyUtils.CookieUtil;
 import com.neu.reliidentyBack.reliidentyUtils.ReliidentyUtils;
@@ -12,16 +13,17 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -38,6 +40,8 @@ public class LoginController {
     @Value("${reliidenty.cookiePath.loginTicket}")
     private String PATH;
 
+    @Value("${reliidenty.codePassTime}")
+    private int codePassTime;
     /**
      * 注册方法
      *
@@ -50,15 +54,17 @@ public class LoginController {
             //已经注册成功
             return ReliidentyUtils.getJSONString(200,"注册成功");
         }else{
-            return ReliidentyUtils.getJSONString(400,"创建出现问题",map);
+            return ReliidentyUtils.getJSONString(400,"注册出现问题",map);
         }
     }
 
     @RequestMapping(path = "/login",method = RequestMethod.GET)
     @ResponseBody
-    public String login(String username, String password, boolean rememberme,String code,HttpServletResponse response,HttpSession session){
-        String kaptchaCode=(String) session.getAttribute("kaptchaText");
-        if(!code.equals(kaptchaCode)){
+    public String login(@RequestParam("username") String username, @RequestParam("password") String password, @RequestParam("rememberme") boolean rememberme, @RequestParam("code") String code, HttpServletRequest request, HttpServletResponse response){
+       //去数据库里查验证码
+        String kaptchaOwner = CookieUtil.getValue(request,"kaptchaOwner");
+        Kaptcha kaptcha=userService.findKaptcha(kaptchaOwner);
+        if(kaptcha==null||new Date().after(kaptcha.getExpiredTime())||!code.equals(kaptcha.getKaptchaCode())){
             return ReliidentyUtils.getJSONString(400,"验证码错误");
         }
         //验证登陆信息
@@ -76,10 +82,19 @@ public class LoginController {
     }
 
     @RequestMapping(path = "/kaptcha",method = RequestMethod.GET)
-    public void getKaptcha(HttpServletResponse response, HttpSession session){
+    public void getKaptcha(HttpServletResponse response){
         String text=kaptchaProducer.createText();
-        //将验证码信息存在session里
-        session.setAttribute("kaptchaText",text);
+        String kaptchaOwner=ReliidentyUtils.generateUUID();
+        //将验证码信息存在数据库中
+
+        Kaptcha kaptcha=new Kaptcha();
+        kaptcha.setKaptchaOwber(kaptchaOwner);
+        kaptcha.setKaptchaCode(text);
+        kaptcha.setExpiredTime(new Date(System.currentTimeMillis()+codePassTime*1000));
+        userService.addKaptcha(kaptcha);
+        //给reponse中加入cookie
+        response.addCookie(new Cookie("kaptchaOwner",kaptchaOwner));
+
         BufferedImage image= kaptchaProducer.createImage(text);
         response.setContentType("image.png");
         //传输文件到前端
