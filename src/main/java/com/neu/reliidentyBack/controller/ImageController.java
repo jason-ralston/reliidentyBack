@@ -42,9 +42,11 @@ public class ImageController {
     @Autowired
     private HostHolder hostHolder;
 
-    @RequestMapping(path = "/AnaResUnLogin",method = RequestMethod.POST)
+
+    // http://localhost:8000/reliidenty/image/anaResUnlogin
+    @RequestMapping(path = "/anaResUnLogin",method = RequestMethod.POST)
     @ResponseBody
-    public String getAnalysisResult(MultipartFile imageFile, @RequestParam("ownerId") String ownerId, @RequestParam("content") String content){
+    public String getAnalysisResult(@RequestParam("imageFile") MultipartFile imageFile,String ownerId,String content){
         Map<String,Object> map=new HashMap<>();
         Ticket useTicket=userService.findTicketByContent(content);
         if(useTicket==null){
@@ -75,7 +77,7 @@ public class ImageController {
             if(StringUtils.isBlank(suffix)){
                 return ReliidentyUtils.getJSONString(400,"文件格式为空");
             }
-            if(!(suffix.equals("jpg") || suffix.equals("png"))){
+            if(!(suffix.equals(".jpg") || suffix.equals(".png") || suffix.equals(".jpeg"))){
                 return ReliidentyUtils.getJSONString(400,"格式暂时不受支持");
             }
             //生成随机文件名
@@ -91,8 +93,11 @@ public class ImageController {
                 throw  new RuntimeException("文件上传失败",e);
             }
             image=new Image();
+            //设置图片信息
             image.setImageMD5(imageMD5);
-            image.setOwnerId(ownerId);
+            if(ownerId!=null){
+                image.setOwnerId(ownerId);
+            }
             image.setUserId(user.getId());
             //python端处理数据
              image = imageService.analysisImage(image,path);
@@ -115,11 +120,19 @@ public class ImageController {
         return ReliidentyUtils.getJSONString(200,"请求成功",map);
     }
 
-    @RequestMapping(path = "/AnaResLogin",method = RequestMethod.POST)
+    // http://localhost:8000/reliidenty/image/anaResLogin
+    @RequestMapping(path = "/anaResLogin",method = RequestMethod.POST)
     @ResponseBody
     @LoginRequired
-    public String getAnalysisResult(MultipartFile imageFile,@RequestParam("ownerId") String ownerId){
+    public String getAnalysisResult(@RequestParam("imageFile") MultipartFile imageFile,String ownerId){
         return getAnalysisResult(imageFile,ownerId,hostHolder.getUser().getUseTicket());
+    }
+    // http://localhost:8000/reliidenty/image/anaResLoginNoOwner
+    @RequestMapping(path = "/anaResLoginNoOwner",method = RequestMethod.POST)
+    @ResponseBody
+    @LoginRequired
+    public String getAnalysisResult(@RequestParam("imageFile") MultipartFile imageFile){
+        return getAnalysisResult(imageFile,null,hostHolder.getUser().getUseTicket());
     }
 
     @RequestMapping(path = "/userImages",method = RequestMethod.GET)
@@ -152,7 +165,6 @@ public class ImageController {
     @ResponseBody
     @LoginRequired
     public String getOwnerImages(String ownerId){
-        User user=hostHolder.getUser();
         List<Image> imageList = imageService.findImagesByOwner(ownerId);
         if(imageList==null || imageList.isEmpty()){
             return ReliidentyUtils.getJSONString(204,"系统内不存在该用户的识别记录");
@@ -161,6 +173,8 @@ public class ImageController {
         map.put("res",imageList);
         return ReliidentyUtils.getJSONString(200,"查询成功",map);
     }
+
+
 
 
 }

@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Map;
 
@@ -46,7 +47,7 @@ public class LoginController {
      * 注册方法
      *
      * */
-    @RequestMapping(path = "/register",method = RequestMethod.GET)
+    @RequestMapping(path = "/register",method = RequestMethod.POST)
     @ResponseBody
     public String register(User user){
         Map<String,Object> map=userService.register(user);
@@ -58,13 +59,14 @@ public class LoginController {
         }
     }
 
-    @RequestMapping(path = "/login",method = RequestMethod.GET)
+    @RequestMapping(path = "/login",method = RequestMethod.POST)
     @ResponseBody
     public String login(@RequestParam("username") String username, @RequestParam("password") String password, @RequestParam("rememberme") boolean rememberme, @RequestParam("code") String code, HttpServletRequest request, HttpServletResponse response){
        //去数据库里查验证码
         String kaptchaOwner = CookieUtil.getValue(request,"kaptchaOwner");
         Kaptcha kaptcha=userService.findKaptcha(kaptchaOwner);
-        if(kaptcha==null||new Date().after(kaptcha.getExpiredTime())||!code.equals(kaptcha.getKaptchaCode())){
+        long timestamp = new Date().getTime();
+        if(kaptcha==null||timestamp<kaptcha.getExpiredTime().getTime()||!code.toUpperCase().equals(kaptcha.getKaptchaCode())){
             return ReliidentyUtils.getJSONString(400,"验证码错误");
         }
         //验证登陆信息
@@ -88,9 +90,9 @@ public class LoginController {
         //将验证码信息存在数据库中
 
         Kaptcha kaptcha=new Kaptcha();
-        kaptcha.setKaptchaOwber(kaptchaOwner);
+        kaptcha.setKaptchaOwner(kaptchaOwner);
         kaptcha.setKaptchaCode(text);
-        kaptcha.setExpiredTime(new Date(System.currentTimeMillis()+codePassTime*1000));
+        kaptcha.setExpiredTime(new Timestamp(new Date(System.currentTimeMillis()+codePassTime*1000).getTime()));
         userService.addKaptcha(kaptcha);
         //给reponse中加入cookie
         response.addCookie(new Cookie("kaptchaOwner",kaptchaOwner));
@@ -106,7 +108,7 @@ public class LoginController {
         }
     }
 
-    @RequestMapping(path="/logout",method = RequestMethod.GET)
+    @RequestMapping(path="/logout",method = RequestMethod.POST)
     @ResponseBody
     public String logout(HttpServletRequest request){
         String ticket = CookieUtil.getValue(request,"ticket");

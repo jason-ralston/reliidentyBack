@@ -10,7 +10,7 @@ import java.util.Date;
  */
 @Data
 public class Kaptcha {
-    private String kaptchaOwber;
+    private String kaptchaOwner;
     private String kaptchaCode;
     private Date expiredTime;//过期时间
 
