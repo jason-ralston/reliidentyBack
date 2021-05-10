@@ -65,8 +65,7 @@ public class LoginController {
        //去数据库里查验证码
         String kaptchaOwner = CookieUtil.getValue(request,"kaptchaOwner");
         Kaptcha kaptcha=userService.findKaptcha(kaptchaOwner);
-        long timestamp = new Date().getTime();
-        if(kaptcha==null||timestamp<kaptcha.getExpiredTime().getTime()||!code.toUpperCase().equals(kaptcha.getKaptchaCode())){
+        if(kaptcha==null|| kaptcha.getExpiredTime().before(new Date())|| !code.equalsIgnoreCase(kaptcha.getKaptchaCode())){
             return ReliidentyUtils.getJSONString(400,"验证码错误");
         }
         //验证登陆信息
@@ -92,13 +91,12 @@ public class LoginController {
         Kaptcha kaptcha=new Kaptcha();
         kaptcha.setKaptchaOwner(kaptchaOwner);
         kaptcha.setKaptchaCode(text);
-        kaptcha.setExpiredTime(new Timestamp(new Date(System.currentTimeMillis()+codePassTime*1000).getTime()));
+        kaptcha.setExpiredTime(new Date(System.currentTimeMillis()+codePassTime* 1000L));
         userService.addKaptcha(kaptcha);
         //给reponse中加入cookie
         response.addCookie(new Cookie("kaptchaOwner",kaptchaOwner));
 
         BufferedImage image= kaptchaProducer.createImage(text);
-        response.setContentType("image.png");
         //传输文件到前端
         try{
             OutputStream os=response.getOutputStream();

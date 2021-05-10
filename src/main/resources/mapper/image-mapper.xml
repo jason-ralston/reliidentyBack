@@ -26,6 +26,9 @@
         where ownerid=#{ownerId}
     </select>
 
-
+    <insert id="insertImage" parameterType="com.neu.reliidentyBack.domain.Image" keyProperty="imageMD5" >
+        insert into image
+        values(#{imageMD5},#{userId},#{ownerId},#{vioProbability},#{sexProbability},#{advProbability},#{polProbability},#{createTime})
+    </insert>
 
 </mapper>

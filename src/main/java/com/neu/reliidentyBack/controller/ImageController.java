@@ -46,7 +46,7 @@ public class ImageController {
     // http://localhost:8000/reliidenty/image/anaResUnlogin
     @RequestMapping(path = "/anaResUnLogin",method = RequestMethod.POST)
     @ResponseBody
-    public String getAnalysisResult(@RequestParam("imageFile") MultipartFile imageFile,String ownerId,String content){
+    public String getAnalysisResult(@RequestParam("imageFile") MultipartFile imageFile,String ownerId,@RequestParam("content") String content){
         Map<String,Object> map=new HashMap<>();
         Ticket useTicket=userService.findTicketByContent(content);
         if(useTicket==null){
@@ -132,6 +132,7 @@ public class ImageController {
     @ResponseBody
     @LoginRequired
     public String getAnalysisResult(@RequestParam("imageFile") MultipartFile imageFile){
+        User user=hostHolder.getUser();
         return getAnalysisResult(imageFile,null,hostHolder.getUser().getUseTicket());
     }
 

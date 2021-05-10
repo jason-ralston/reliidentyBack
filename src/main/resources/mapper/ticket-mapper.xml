@@ -4,14 +4,14 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.neu.reliidentyBack.dao.TicketMapper">
     <sql id="selectFields">
-        user_id,content,status,expired,use_time
+        id,user_id,content,ticket_type,status,expired,use_time
     </sql>
 
     <sql id="insertLoginFields">
-        user_id,ticket_type,content,expired
+        user_id,ticket_type,content,status,expired
     </sql>
     <sql id="insertUseFields">
-        user_id,ticket_type,content,use_time
+        user_id,ticket_type,content,status,use_time
     </sql>
     <select id="selectTicketByContent" resultType="com.neu.reliidentyBack.domain.Ticket">
         select <include refid="selectFields"></include>
@@ -21,12 +21,12 @@
 
     <insert id="insertLoginTicket" keyProperty="id">
         insert  into ticket(<include refid="insertLoginFields"></include>)
-        values(#{userId},#{ticketType},#{content},#{expired})
+        values(#{userId},#{ticketType},#{content},#{status},#{expired})
     </insert>
 
     <insert id="insertUseTicket" keyProperty="id">
         insert  into ticket(<include refid="insertUseFields"></include>)
-        values(#{userId},#{ticketType},#{content},#{useTime})
+        values(#{userId},#{ticketType},#{content},#{status},#{useTime})
     </insert>
 
     <update id="updateUseTime" keyProperty="id">
