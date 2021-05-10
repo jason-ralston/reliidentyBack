@@ -66,6 +66,7 @@ public class ImageController {
                 map.put("sex",image.getSexProbability());
                 map.put("adv",image.getAdvProbability());
                 map.put("pol",image.getPolProbability());
+                map.put("safe",image.getSafeProbability());
                 //扣除使用次数
                 userService.updateUseTime(useTicket.getUseTime()-1,useTicket.getId());
                 return ReliidentyUtils.getJSONString(200,"请求成功",map);
@@ -106,7 +107,7 @@ public class ImageController {
              map.put("sex",image.getSexProbability());
              map.put("adv",image.getAdvProbability());
              map.put("pol",image.getPolProbability());
-
+             map.put("safe",image.getSafeProbability());
             //扣除使用次数
             userService.updateUseTime(useTicket.getUseTime()-1,useTicket.getId());
             //存储图片信息
@@ -173,6 +174,7 @@ public class ImageController {
         Map<String,Object> map=new HashMap<>();
         map.put("res",imageList);
         return ReliidentyUtils.getJSONString(200,"查询成功",map);
+
     }
 
 

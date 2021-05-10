@@ -24,6 +24,7 @@ public class Image {
     private float sexProbability; //色情类型的违规概率
     private float advProbability; //广告类型的违规概率
     private float polProbability; //政治类型违规概率
+    private float safeProbability; //安全的概率
     private Date createTime;
 
 

@@ -7,6 +7,7 @@ import java.util.Date;
 /**
  * @author jasonR
  * @date 2021/5/9 23:43
+ * 
  */
 @Data
 public class Kaptcha {

@@ -43,6 +43,7 @@ public class ImageService {
             image.setSexProbability(Float.parseFloat(res[1]));
             image.setAdvProbability(Float.parseFloat(res[2]));
             image.setPolProbability(Float.parseFloat(res[3]));
+            image.setSafeProbability(Float.parseFloat(res[4]));
             os.close();
             is.close();
         } catch (IOException e) {
